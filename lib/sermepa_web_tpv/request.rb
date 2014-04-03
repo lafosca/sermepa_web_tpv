@@ -13,6 +13,10 @@ module SermepaWebTpv
       optional_options.merge(must_options)
     end
 
+    def options_with_reference(reference="")
+      optional_options.merge(must_options(reference))
+    end
+
     def transact(&block)
       generate_transaction_number!
       yield(transaction)
@@ -33,29 +37,35 @@ module SermepaWebTpv
       (transaction_amount * 100).to_i.to_s
     end
 
-    def must_options
-      {
+    def must_options(reference="")
+      must_options = {
         'Ds_Merchant_Amount' =>             amount,
         'Ds_Merchant_Currency' =>           SermepaWebTpv.currency, #EURO
         'Ds_Merchant_Order' =>              transaction_number,
         'Ds_Merchant_ProductDescription' => description,
         'Ds_Merchant_MerchantCode' =>       SermepaWebTpv.merchant_code,
-        'Ds_Merchant_MerchantSignature' =>  signature,
+        'Ds_Merchant_MerchantSignature' =>  signature(reference),
         'Ds_Merchant_Terminal' =>           SermepaWebTpv.terminal,
         'Ds_Merchant_TransactionType' =>    SermepaWebTpv.transaction_type,
         'Ds_Merchant_ConsumerLanguage' =>   SermepaWebTpv.language,
         'Ds_Merchant_MerchantURL' =>        url_for(:callback_response_path)
       }
+
+      if reference && reference != ""
+        must_options['Ds_Merchant_Identifier'] = reference
+      end
+
+      must_options
     end
 
-    def signature
+    def signature(reference)
       #Ds_Merchant_Amount + Ds_Merchant_Order +Ds_Merchant_MerchantCode + Ds_Merchant_Currency +Ds_Merchant_TransactionType + Ds_Merchant_MerchantURL + CLAVE SECRETA
       merchant_code = SermepaWebTpv.merchant_code
       currency = SermepaWebTpv.currency
       transaction_type = SermepaWebTpv.transaction_type
       callback_url = url_for(:callback_response_path)
       merchant_secret_key = SermepaWebTpv.merchant_secret_key
-      Digest::SHA1.hexdigest("#{amount}#{transaction_number}#{merchant_code}#{currency}#{transaction_type}#{callback_url}#{merchant_secret_key}").upcase
+      Digest::SHA1.hexdigest("#{amount}#{transaction_number}#{merchant_code}#{currency}#{transaction_type}#{callback_url}#{reference}#{merchant_secret_key}").upcase
     end
 
     # Available options
