@@ -13,8 +13,8 @@ module SermepaWebTpv
       optional_options.merge(must_options)
     end
 
-    def options_with_reference(reference="")
-      optional_options.merge(must_options(reference))
+    def options_with_reference(reference="", secure=true)
+      optional_options.merge(must_options(reference, secure))
     end
 
     def transact(&block)
@@ -37,7 +37,7 @@ module SermepaWebTpv
       (transaction_amount * 100).to_i.to_s
     end
 
-    def must_options(reference="")
+    def must_options(reference="", secure=true)
       must_options = {
         'Ds_Merchant_Amount' =>             amount,
         'Ds_Merchant_Currency' =>           SermepaWebTpv.currency, #EURO
@@ -48,7 +48,8 @@ module SermepaWebTpv
         'Ds_Merchant_Terminal' =>           SermepaWebTpv.terminal,
         'Ds_Merchant_TransactionType' =>    SermepaWebTpv.transaction_type,
         'Ds_Merchant_ConsumerLanguage' =>   SermepaWebTpv.language,
-        'Ds_Merchant_MerchantURL' =>        url_for(:callback_response_path)
+        'Ds_Merchant_MerchantURL' =>        url_for(:callback_response_path),
+        'Ds_SecurePayment' =>               secure? "1" : "0"
       }
 
       if reference && reference != ""
