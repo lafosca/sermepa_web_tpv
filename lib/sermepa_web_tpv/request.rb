@@ -49,7 +49,7 @@ module SermepaWebTpv
         'Ds_Merchant_TransactionType' =>    SermepaWebTpv.transaction_type,
         'Ds_Merchant_ConsumerLanguage' =>   SermepaWebTpv.language,
         'Ds_Merchant_MerchantURL' =>        url_for(:callback_response_path),
-        'Ds_SecurePayment' =>               secure ? "1" : "0"
+        'Ds_SecurePayment' =>               secure ? 1 : 0
       }
 
       if reference && reference != ""
