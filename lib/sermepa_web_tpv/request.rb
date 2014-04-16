@@ -44,7 +44,7 @@ module SermepaWebTpv
         'Ds_Merchant_Order' =>              transaction_number,
         'Ds_Merchant_ProductDescription' => description,
         'Ds_Merchant_MerchantCode' =>       SermepaWebTpv.merchant_code,
-        'Ds_Merchant_MerchantSignature' =>  signature(reference),
+        'Ds_Merchant_MerchantSignature' =>  signature(reference, secure),
         'Ds_Merchant_Terminal' =>           SermepaWebTpv.terminal,
         'Ds_Merchant_TransactionType' =>    SermepaWebTpv.transaction_type,
         'Ds_Merchant_ConsumerLanguage' =>   SermepaWebTpv.language,
@@ -59,7 +59,7 @@ module SermepaWebTpv
       must_options
     end
 
-    def signature(reference)
+    def signature(reference="REQUIRED",secure=true)
       #Ds_Merchant_Amount + Ds_Merchant_Order +Ds_Merchant_MerchantCode + Ds_Merchant_Currency +Ds_Merchant_TransactionType + Ds_Merchant_MerchantURL + CLAVE SECRETA
       merchant_code = SermepaWebTpv.merchant_code
       currency = SermepaWebTpv.currency
