@@ -48,8 +48,7 @@ module SermepaWebTpv
         'Ds_Merchant_Terminal' =>           SermepaWebTpv.terminal,
         'Ds_Merchant_TransactionType' =>    SermepaWebTpv.transaction_type,
         'Ds_Merchant_ConsumerLanguage' =>   SermepaWebTpv.language,
-        'Ds_Merchant_MerchantURL' =>        url_for(:callback_response_path),
-        'Ds_Merchant_DirectPayment' =>      secure ? "false" : "true"
+        'Ds_Merchant_MerchantURL' =>        url_for(:callback_response_path)
       }
 
       if reference && reference != ""
@@ -66,8 +65,7 @@ module SermepaWebTpv
       transaction_type = SermepaWebTpv.transaction_type
       callback_url = url_for(:callback_response_path)
       merchant_secret_key = SermepaWebTpv.merchant_secret_key
-      secure_string = secure ? "false" : "true";
-      Digest::SHA1.hexdigest("#{amount}#{transaction_number}#{merchant_code}#{currency}#{transaction_type}#{callback_url}#{reference}#{secure_string}#{merchant_secret_key}").upcase
+      Digest::SHA1.hexdigest("#{amount}#{transaction_number}#{merchant_code}#{currency}#{transaction_type}#{callback_url}#{reference}#{merchant_secret_key}").upcase
     end
 
     # Available options
