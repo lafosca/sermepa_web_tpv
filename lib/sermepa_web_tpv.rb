@@ -11,10 +11,10 @@ module SermepaWebTpv
   @@bank_url = 'https://sis-t.sermepa.es:25443/sis/realizarPago'
 
   mattr_accessor :terminal
-  @@terminal = 1
+  @@terminal = '001'
 
   mattr_accessor :secure_terminal
-  @@secure_terminal = 2
+  @@secure_terminal = '002'
 
   mattr_accessor :merchant_secret_key
 
