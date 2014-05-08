@@ -13,7 +13,12 @@ module SermepaWebTpv
   mattr_accessor :terminal
   @@terminal = 1
 
+  mattr_accessor :secure_terminal
+  @@secure_terminal = 2
+
   mattr_accessor :merchant_secret_key
+
+  mattr_accessor :merchant_secure_secret_key
 
   mattr_accessor :currency
   @@currency = 978 # Euro
