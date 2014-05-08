@@ -12,7 +12,7 @@ module SermepaWebTpv
 
     private
     def signature
-      secure = (params[:Ds_Terminal] == SermepaWebTpv.secure_terminal)
+      secure = (params[:Ds_Terminal].to_i == SermepaWebTpv.secure_terminal)
 
       secret_key = secure ? SermepaWebTpv.merchant_secure_secret_key : SermepaWebTpv.merchant_secret_key
 
