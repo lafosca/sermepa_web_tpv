@@ -55,6 +55,10 @@ module SermepaWebTpv
         must_options['Ds_Merchant_Identifier'] = reference
       end
 
+      if SermepaWebTpv.direct_payment
+        must_options['Ds_Merchant_DirectPayment'] = "true"
+      end
+
       must_options
     end
 
@@ -67,9 +71,7 @@ module SermepaWebTpv
 
       merchant_secret_key = secure ? SermepaWebTpv.merchant_secure_secret_key : SermepaWebTpv.merchant_secret_key
 
-      direct_payment = secure ? "" : "true"
-
-      puts "signature with direct payments now!"
+      direct_payment = SermepaWebTpv.direct_payment ? "true" : ""
 
       Digest::SHA1.hexdigest("#{amount}#{transaction_number}#{merchant_code}#{currency}#{transaction_type}#{callback_url}#{reference}#{direct_payment}#{merchant_secret_key}").upcase
     end

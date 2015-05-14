@@ -7,6 +7,9 @@ module SermepaWebTpv
   mattr_accessor :transaction_model_amount_attribute
   @@transaction_model_amount_attribute = :amount
 
+  mattr_accessor :direct_payment
+  @@direct_payment = false
+
   mattr_accessor :bank_url
   @@bank_url = 'https://sis-t.sermepa.es:25443/sis/realizarPago'
 
