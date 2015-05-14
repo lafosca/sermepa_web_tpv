@@ -67,7 +67,7 @@ module SermepaWebTpv
 
       merchant_secret_key = secure ? SermepaWebTpv.merchant_secure_secret_key : SermepaWebTpv.merchant_secret_key
 
-      direct_payments = secure ? "" : "true"
+      direct_payment = secure ? "" : "true"
 
       puts "signature with direct payments now!"
 
