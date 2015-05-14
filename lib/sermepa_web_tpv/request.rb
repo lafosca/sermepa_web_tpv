@@ -67,7 +67,11 @@ module SermepaWebTpv
 
       merchant_secret_key = secure ? SermepaWebTpv.merchant_secure_secret_key : SermepaWebTpv.merchant_secret_key
 
-      Digest::SHA1.hexdigest("#{amount}#{transaction_number}#{merchant_code}#{currency}#{transaction_type}#{callback_url}#{reference}#{merchant_secret_key}").upcase
+      direct_payments = secure ? "" : "true"
+
+      puts "signature with direct payments now!"
+
+      Digest::SHA1.hexdigest("#{amount}#{transaction_number}#{merchant_code}#{currency}#{transaction_type}#{callback_url}#{reference}#{direct_payment}#{merchant_secret_key}").upcase
     end
 
     # Available options
