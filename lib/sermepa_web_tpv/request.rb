@@ -53,7 +53,13 @@ module SermepaWebTpv
 
       if reference && reference != ""
         must_options['Ds_Merchant_Identifier'] = reference
+
+        if reference!= "REQUIRED" && SermepaWebTpv.direct_payment
+          must_options['Ds_Merchant_DirectPayment'] = "true"
+        end
       end
+
+      
 
       must_options
     end
@@ -66,6 +72,12 @@ module SermepaWebTpv
       callback_url = url_for(:callback_response_path)
 
       merchant_secret_key = secure ? SermepaWebTpv.merchant_secure_secret_key : SermepaWebTpv.merchant_secret_key
+
+      if reference != "REQUIRED"
+          direct_payment = SermepaWebTpv.direct_payment ? "true" : ""
+          return Digest::SHA1.hexdigest("#{amount}#{transaction_number}#{merchant_code}#{currency}#{transaction_type}#{callback_url}#{reference}#{direct_payment}#{merchant_secret_key}").upcase
+
+      end
 
       Digest::SHA1.hexdigest("#{amount}#{transaction_number}#{merchant_code}#{currency}#{transaction_type}#{callback_url}#{reference}#{merchant_secret_key}").upcase
     end
