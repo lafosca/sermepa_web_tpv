@@ -1,5 +1,7 @@
 require 'uri'
 require 'digest'
+require 'json'
+require 'base64'
 
 module SermepaWebTpv
   class Request < Struct.new(:transaction, :description)
@@ -39,28 +41,10 @@ module SermepaWebTpv
 
     def must_options(reference="", secure=true)
       must_options = {
-        'Ds_Merchant_Amount' =>             amount,
-        'Ds_Merchant_Currency' =>           SermepaWebTpv.currency, #EURO
-        'Ds_Merchant_Order' =>              transaction_number,
-        'Ds_Merchant_ProductDescription' => description,
-        'Ds_Merchant_MerchantCode' =>       SermepaWebTpv.merchant_code,
-        'Ds_Merchant_MerchantSignature' =>  signature(reference, secure),
-        'Ds_Merchant_Terminal' =>           secure ? SermepaWebTpv.secure_terminal : SermepaWebTpv.terminal,
-        'Ds_Merchant_TransactionType' =>    SermepaWebTpv.transaction_type,
-        'Ds_Merchant_ConsumerLanguage' =>   SermepaWebTpv.language,
-        'Ds_Merchant_MerchantURL' =>        url_for(:callback_response_path)
+        'Ds_Merchant_MerchantParameters' => merchant_parameters,
+        'Ds_Merchant_MerchantSignature' =>  signature_256(reference, secure),
+        'Ds_SignatureVersion' => "HMAC_SHA256_V1"
       }
-
-      if reference && reference != ""
-        must_options['Ds_Merchant_Identifier'] = reference
-
-        if reference!= "REQUIRED" && SermepaWebTpv.direct_payment
-          must_options['Ds_Merchant_DirectPayment'] = "true"
-        end
-      end
-
-
-
       must_options
     end
 
@@ -80,6 +64,37 @@ module SermepaWebTpv
       end
 
       Digest::SHA256.hexdigest("#{amount}#{transaction_number}#{merchant_code}#{currency}#{transaction_type}#{callback_url}#{reference}#{merchant_secret_key}").upcase
+    end
+
+    def options_for_signature(reference="", secure=true)
+      must_options = {
+        'Ds_Merchant_Amount' =>             amount,
+        'Ds_Merchant_Currency' =>           SermepaWebTpv.currency, #EURO
+        'Ds_Merchant_Order' =>              transaction_number,
+        'Ds_Merchant_ProductDescription' => description,
+        'Ds_Merchant_MerchantCode' =>       SermepaWebTpv.merchant_code,
+        'Ds_Merchant_Terminal' =>           secure ? SermepaWebTpv.secure_terminal : SermepaWebTpv.terminal,
+        'Ds_Merchant_TransactionType' =>    SermepaWebTpv.transaction_type,
+        'Ds_Merchant_ConsumerLanguage' =>   SermepaWebTpv.language,
+        'Ds_Merchant_MerchantURL' =>        url_for(:callback_response_path)
+      }
+
+      if reference && reference != ""
+        must_options['Ds_Merchant_Identifier'] = reference
+
+        if reference!= "REQUIRED" && SermepaWebTpv.direct_payment
+          must_options['Ds_Merchant_DirectPayment'] = "true"
+        end
+      end
+    end
+
+    def merchant_parameters
+      Base64.encode64(options_for_signature.to_json)
+    end
+
+    def signature_256(reference="REQUIRED", secure=true)
+      options_json = options.to_json
+      Digest::SHA256.hexdigest(options)
     end
 
     # Available options
