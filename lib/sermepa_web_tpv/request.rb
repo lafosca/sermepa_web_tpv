@@ -12,11 +12,11 @@ module SermepaWebTpv
     end
 
     def options
-      optional_options.merge(must_options)
+      must_options
     end
 
     def options_with_reference(reference="", secure=true)
-      optional_options.merge(must_options(reference, secure))
+      must_options(reference, secure)
     end
 
     def transact(&block)
@@ -40,12 +40,12 @@ module SermepaWebTpv
     end
 
     def must_options(reference="", secure=true)
-      must_options = {
+      options_hash = {
         'Ds_Merchant_MerchantParameters' => merchant_parameters,
         'Ds_Merchant_MerchantSignature' =>  signature_256(reference, secure),
         'Ds_SignatureVersion' => "HMAC_SHA256_V1"
       }
-      must_options
+      options_hash
     end
 
     def signature(reference="REQUIRED",secure=true)
@@ -86,6 +86,8 @@ module SermepaWebTpv
           must_options['Ds_Merchant_DirectPayment'] = "true"
         end
       end
+
+      optional_options.merge(must_options)
     end
 
     def merchant_parameters
