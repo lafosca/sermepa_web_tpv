@@ -67,7 +67,7 @@ module SermepaWebTpv
     end
 
     def options_for_signature(reference="", secure=true)
-      must_options = {
+      options_hash = {
         'Ds_Merchant_Amount' =>             amount,
         'Ds_Merchant_Currency' =>           SermepaWebTpv.currency, #EURO
         'Ds_Merchant_Order' =>              transaction_number,
@@ -80,23 +80,22 @@ module SermepaWebTpv
       }
 
       if reference && reference != ""
-        must_options['Ds_Merchant_Identifier'] = reference
+        options_hash['Ds_Merchant_Identifier'] = reference
 
         if reference!= "REQUIRED" && SermepaWebTpv.direct_payment
-          must_options['Ds_Merchant_DirectPayment'] = "true"
+          options_hash['Ds_Merchant_DirectPayment'] = "true"
         end
       end
 
-      optional_options.merge(must_options)
+      optional_options.merge(options_hash)
     end
 
     def merchant_parameters
-      Base64.encode64(options_for_signature.as_json)
+      Base64.encode64(options_for_signature.to_json)
     end
 
     def signature_256(reference="REQUIRED", secure=true)
-      options_json = options.to_json
-      Digest::SHA256.hexdigest(options)
+      Digest::SHA256.hexdigest(merchant_parameters)
     end
 
     # Available options
