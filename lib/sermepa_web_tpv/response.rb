@@ -1,4 +1,4 @@
-require 'digest/sha1'
+require 'digest'
 
 module SermepaWebTpv
   class Response < Struct.new(:params)
@@ -24,7 +24,7 @@ module SermepaWebTpv
         #{params[:Ds_Response]}
         #{secret_key}
       ).join
-      Digest::SHA1.hexdigest(response).upcase
+      Digest::SHA256.hexdigest(response).upcase
     end
   end
 end
