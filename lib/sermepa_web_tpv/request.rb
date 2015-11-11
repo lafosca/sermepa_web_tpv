@@ -25,6 +25,14 @@ module SermepaWebTpv
       self
     end
 
+    def optional_options
+      {
+        'Ds_Merchant_Titular'      => SermepaWebTpv.merchant_name,
+        'Ds_Merchant_UrlKO'        => url_for(:redirect_failure_path),
+        'Ds_Merchant_UrlOK'        => url_for(:redirect_success_path)
+      }.delete_if {|key, value| value.blank? }
+    end
+
     private
 
     def transaction_number_attribute
@@ -110,15 +118,5 @@ module SermepaWebTpv
         URI.join("http://#{host}", path).to_s
       end
     end
-
-    def optional_options
-      {
-        'Ds_Merchant_Titular'      => SermepaWebTpv.merchant_name,
-        'Ds_Merchant_UrlKO'        => url_for(:redirect_failure_path),
-        'Ds_Merchant_UrlOK'        => url_for(:redirect_success_path)
-      }.delete_if {|key, value| value.blank? }
-    end
-
-
   end
 end
