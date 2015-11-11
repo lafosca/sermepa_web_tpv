@@ -2,6 +2,7 @@ require 'uri'
 require 'digest'
 require 'json'
 require 'base64'
+require 'openssl'
 
 module SermepaWebTpv
   class Request < Struct.new(:transaction, :description)
@@ -102,8 +103,20 @@ module SermepaWebTpv
       Base64.encode64(options_for_signature.to_json)
     end
 
-    def signature_256(reference="REQUIRED", secure=true)
-      Digest::SHA256.hexdigest(merchant_parameters)
+    def signature_256(reference="REQUIRED", secure=true, order_id)
+      Base64.encode64(Digest::SHA256.hexdigest(order_signature(order_id)+merchant_parameters))
+    end
+
+    def order_signature(secure)
+      merchant_secret_key = secure ? SermepaWebTpv.merchant_secure_secret_key : SermepaWebTpv.merchant_secret_key
+      order_id = transaction_number
+
+      des2 = OpenSSL::Cipher::Cipher.new('des-ede3')
+      des2.encrypt
+      des2.key = merchant_secret_key
+
+      result = des2.update(order_id) + des2.final
+      return Base64.encode64(result)
     end
 
     # Available options
