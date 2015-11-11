@@ -91,7 +91,7 @@ module SermepaWebTpv
     end
 
     def merchant_parameters
-      Base64.encode64(options_for_signature.to_json)
+      Base64.encode64(options_for_signature.as_json)
     end
 
     def signature_256(reference="REQUIRED", secure=true)
