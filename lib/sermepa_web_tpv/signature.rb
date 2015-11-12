@@ -12,7 +12,7 @@ module SermepaWebTpv
 
     private
 
-    def order_signature(order_id, merchant_secret_key)
+    def self.order_signature(order_id, merchant_secret_key)
       des2 = OpenSSL::Cipher::Cipher.new('des-ede3')
       des2.encrypt
       des2.key = merchant_secret_key
