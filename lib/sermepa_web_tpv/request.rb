@@ -51,7 +51,7 @@ module SermepaWebTpv
     def must_options(reference="", secure=true)
       options_hash = {
         'Ds_MerchantParameters' => merchant_parameters,
-        'Ds_Signature' =>  signature_256(reference, secure),
+        'Ds_Signature' =>  Signature.signature_256(reference, secure, transaction_number, merchant_parameters),
         'Ds_SignatureVersion' => "HMAC_SHA256_V1"
       }
       options_hash
@@ -101,22 +101,6 @@ module SermepaWebTpv
 
     def merchant_parameters
       Base64.encode64(options_for_signature.to_json)
-    end
-
-    def signature_256(reference="REQUIRED", secure=true, order_id)
-      Base64.encode64(Digest::SHA256.hexdigest(order_signature(order_id)+merchant_parameters))
-    end
-
-    def order_signature(secure)
-      merchant_secret_key = secure ? SermepaWebTpv.merchant_secure_secret_key : SermepaWebTpv.merchant_secret_key
-      order_id = transaction_number.to_s
-
-      des2 = OpenSSL::Cipher::Cipher.new('des-ede3')
-      des2.encrypt
-      des2.key = merchant_secret_key
-
-      result = des2.update(order_id) + des2.final
-      return Base64.encode64(result)
     end
 
     # Available options
