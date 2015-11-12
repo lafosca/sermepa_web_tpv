@@ -6,7 +6,7 @@ require 'openssl'
 module SermepaWebTpv
   class Signature
     def self.signature_256(order_id, merchant_secret_key, merchant_parameters)
-      order_signature = order_signature(order_id, merchant_secret_key)
+      order_signature = order_signature(order_id, Base64.decode64(merchant_secret_key))
       Base64.encode64(OpenSSL::HMAC.hexdigest('sha256',order_signature,merchant_parameters))
     end
 
