@@ -53,7 +53,7 @@ module SermepaWebTpv
 
       options_hash = {
         'Ds_MerchantParameters' => merchant_parameters,
-        'Ds_Signature' =>  Signature.signature_256(transaction_number, merchant_secret_key , merchant_parameters),
+        'Ds_Signature' =>  Signature.signature_256(transaction_number.to_s, merchant_secret_key , merchant_parameters),
         'Ds_SignatureVersion' => "HMAC_SHA256_V1"
       }
       options_hash
