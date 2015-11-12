@@ -49,9 +49,11 @@ module SermepaWebTpv
     end
 
     def must_options(reference="", secure=true)
+      merchant_secret_key = secure ? SermepaWebTpv.merchant_secure_secret_key : SermepaWebTpv.merchant_secret_key
+
       options_hash = {
         'Ds_MerchantParameters' => merchant_parameters,
-        'Ds_Signature' =>  Signature.signature_256(reference, secure, transaction_number, merchant_parameters),
+        'Ds_Signature' =>  Signature.signature_256(transaction_number, merchant_secret_key , merchant_parameters),
         'Ds_SignatureVersion' => "HMAC_SHA256_V1"
       }
       options_hash
