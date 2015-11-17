@@ -14,7 +14,7 @@ module SermepaWebTpv
 
     private
     def signature
-      merchant_params = JSON.parse(Base64.decode64(params[:Ds_MerchantParameters]));
+      merchant_params = JSON.parse(Base64.decode64(params[:Ds_MerchantParameters]), symbolize_names: true);
 
       secure = (merchant_params[:Ds_Terminal].to_i == SermepaWebTpv.secure_terminal)
       secret_key = secure ? SermepaWebTpv.merchant_secure_secret_key : SermepaWebTpv.merchant_secret_key
