@@ -14,19 +14,12 @@ module SermepaWebTpv
 
     private
     def signature
-      secure = (params[:Ds_Terminal].to_i == SermepaWebTpv.secure_terminal)
+      merchant_params = JSON.parse(Base64.decode64(params[:Ds_MerchantParameters]));
 
+      secure = (merchant_params[:Ds_Terminal].to_i == SermepaWebTpv.secure_terminal)
       secret_key = secure ? SermepaWebTpv.merchant_secure_secret_key : SermepaWebTpv.merchant_secret_key
 
-      response = %W(
-        #{params[:Ds_Amount]}
-        #{params[:Ds_Order]}
-        #{params[:Ds_MerchantCode]}
-        #{params[:Ds_Currency]}
-        #{params[:Ds_Response]}
-        #{secret_key}
-      ).join
-      Digest::SHA256.hexdigest(response).upcase
+      Signature.signature_256(merchant_params[:Ds_Order].to_s, secret_key , params[:Ds_MerchantParameters])
     end
 
     def signature_256
