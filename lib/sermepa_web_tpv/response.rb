@@ -23,7 +23,15 @@ module SermepaWebTpv
       secure = (merchant_params[:Ds_Terminal].to_i == SermepaWebTpv.secure_terminal)
       secret_key = secure ? SermepaWebTpv.merchant_secure_secret_key : SermepaWebTpv.merchant_secret_key
 
-      Signature.signature_256(merchant_params[:Ds_Order].to_s, secret_key , params[:Ds_MerchantParameters])
+      sig = Signature.signature_256(merchant_params[:Ds_Order].to_s, secret_key , params[:Ds_MerchantParameters])
+
+      # Here is the new 'magic' for Sermepa
+      # We MUST replace '+' with '-'
+      # We MUST replace '/' with '_'
+      # Maybe they use this signature in some GET route, or something like that
+      # And they return it with this characters replaced
+      # As seen in https://gist.github.com/enoliglesias/7d01a443700f9bb94752
+      sig.gsub("+", "-").gsub("/", "_")
     end
   end
 end
